@@ -1,0 +1,1038 @@
+Setting path of BrowserDriver:
+		System.setProperty("webdriver.chrome.driver", "C:\\Users\\System 1\\Documents\\Selenium_Traning\\chromedriver.exe");
+		
+Setting WebDriver and BrowserDriver:
+			WebDriver driver = new ChromeDriver();
+			WebDriver is a interface which acutally creates methods with empty bodies. we cannot create object or instance of the interface
+			ChromeDriver is a BrowserDriver which uses methods of WebDriver and defines the logic or body in methods.
+			
+Hitting URL on browser:
+		driver.get("www.google.com");
+			It normally waits untill the webpage completly loaded
+		driver.navigate().to(url);
+		driver.navigate().forward();  
+		driver.navigate().back();  
+		driver.navigate().refresh();
+		has three methods 1 forward 2 backward 3 reload
+					
+		
+Locators:
+
+Locating elements in Selenium WebDriver is performed with the help of findElement() and findElements() methods provided by WebDriver and WebElement class.
+
+findElement():returns a WebElement object based on a specified search criteria or ends up throwing an exception if it does not find any element matching the search criteria.
+
+findElements():returns a list of WebElements matching the search criteria. If no elements are found, it returns an empty list.
+
+1. ID               :driver.findElement(By.id (<element ID>))              :Locates an element using the ID attribute
+2. name             :driver.findElement(By.name (<element name>))          :Locates an element using the Name attribute
+3. className        :driver.findElement(By.className (<element class>))    :Locates an element using the Class attribute
+4. tagName          :driver.findElement(By.tagName (<htmltagname>))        :Locates an element using the HTML tag
+5. linkText         :driver.findElement(By.linkText (<linktext>))          :Locates a link using link text
+6. partialLinkText  :driver.findElement(By.partialLinkText (<linktext>))   :Locates a link using the link's partial text
+7. cssSelector      :driver.findElement(By.cssSelector (<css selector>))   :Locates an element using the CSS selector
+8. xpath            :driver.findElement(By.xpath (<xpath>))                :Locates an element using XPath query
+
+
+cssSelector:
+a) className: tagName.className 
+		  ex: Button.submit
+		  
+b) ID: tagName#Id
+   ex: input#inputUsername
+   
+c) Generic: TagName[attribute='value']
+	    ex: input[placeholder='username']
+		
+xpath: 
+a) Generic: //TagName[@attribute='value']
+	    ex: //input[@placeholder='username']		
+		
+		
+Locators using Regular Expressions:
+a)cssSelector: TagName[attribute*='value']  	   //partial value can be detected
+		  ex: Button[name*='Submit']
+
+b)xpath: //TagName[contains(@attribute,'value')]   //partial value can be detected
+		 //TagName[contains(text(),'value1' or 'value2')]	   //If the Element has only text without any attribute 
+			  ex: //Button[contains(@name,'Submit')]
+			  //button[contains(text(),'PROCEED TO CHECKOUT')]	
+	xpath for dynamic changes:  //button[contains(@class,'start' or 'stop' or 'value3')]					
+								//button[contains(@class,'st')]
+								
+						//button[@attribute='value1' and @attribute='value2']	
+						//input[@type='text' and @class='sugInp' and @id='qsb-keyskill-sugg']
+
+Parent-Child Relationship
+a)cssSelector: ParentTagName ChildTagName  //only down level
+			 : ParentTagName[attribute*='value']:nth-child(index)
+		  ex: Button submit
+		    : input[attribute='value']:nth-child(1)
+
+b)xpath: //ParentTagName/ChildTagName  //only down level
+		  ex: //Button/submit[2]
+		  
+Child-Parent Relationship
+a)cssSelector: Not possible
+
+b)xpath: //header/div/button[1]/parent::div/parent::header/div/button //up level and down level
+		 //header/div/button[1]parent::div/button[2]
+	
+		 
+Sibling to Sibling Relationship
+a)cssSelector: Not possible
+
+b)xpath: //header/div/button[2]/following-sibling::button[3] //Same level tagname downlevel
+		 //div[@class='left-align']/following-sibling::div[1]
+		 //header/div/button[2]/preceding-sibling::button[1] //Same level tagname uplevel
+
+
+Dropdown:
+	Static Dropdown:
+		Using 'Select' Keyword:
+			WebElement dropdown = driver.findElement(By.cssSelector("select#ctl00_mainContent_DropDownListCurrency"));
+			Select StaticDropdown= new Select(dropdown);
+			StaticDropdown.selectByIndex(3);
+			StaticDropdown.selectByVisibleText("AED");
+			StaticDropdown.selectByValue("INR");
+			List <WebElement> options = StaticDropdown.getOptions();
+			options.size();// returns the number of options in dropdown
+			
+	Dynamic Dropdown:
+		Using Absolute xpath: starting from body in html DOM
+		Example: By.cssSelector("div#glsctl00_mainContent_ddl_destinationStation1_CTNR div[class='dropdownDiv'] li a[value='BLR']"))
+		
+		
+AutoSuggestive Dropdowns:
+
+		driver.findElement(By.id("autosuggest")).sendKeys("Aus");
+			List<WebElement> options=driver.findElements(By.xpath("//li[@class='ui-menu-item']/a[1]"));
+			
+			//enhanced for loop
+			for(WebElement option:options) {
+				if(option.getText().equalsIgnoreCase("Austria")) {
+					option.click();
+					break;
+				}
+			}	
+		
+		//options.stream().filter(s->s.getText()).forEach(s->s.equalsIgnoreCase("Austria")).click();
+	//1.filter 2.map 3.collectors  
+	//countryList.stream().map(s->s.getText().equals(value).click());
+	//countryList.stream().filter(s->s.getText().equals(value)).map(s->s.click()); doubt
+		//originalCL.stream().filter(s->s.equals(value));
+		
+Java Alerts: 
+	//Accepting the alert:
+		driver.switchTo().alert().accept()
+	//Accepting and dismiss the alert:
+		driver.switchTo().alert().accept()
+		driver.switchTo().alert().dismiss();
+	//for getting text of alert
+		String title=driver.switchTo().alert().getText();
+		
+Calender UI:
+			Date:
+				Current Date: Current date will have extra value than other dates
+					a[class='ui-state-default ui-state-highlight']
+				Any other date: Use Absolute xpath and Relative xpath to select dates
+					//div[1]/table[1]/tbody[1]/tr[2]/td[5]/a[1]
+			Month:
+				String month=driver.findElement(By.cssSelector(".monthTitle")).getText();
+				while(!month.contains("Jan 2022")) 
+				{
+				driver.findElement(By.cssSelector("td[class='next']")).click();
+				}
+			Year:
+				String month=driver.findElement(By.cssSelector(".monthTitle")).getText();
+				while(!month.contains("Jan 2022")) 
+				{
+				driver.findElement(By.cssSelector("td[class='next']")).click();
+				}
+				
+
+Count of number of checkbox present in webpage:
+		System.out.println(driver.findElements(By.cssSelector("input[type='checkbox']").size()));
+			We have to find the common attribute in the all checkboxes in webpage.
+			
+
+Inconsisent locators in Ecommerce app:
+			we need to limit the scope or find the object place and continue
+			// 1. format it to get actual vegetable name
+			// 2. convert array into array list for easy search
+			// 3. check whether name you extracted is present in arrayList or not-	
+			
+			public static void addItems(WebDriver driver, String[] itemsNeeded)
+	{
+		int j = 0;
+		List<WebElement> products = driver.findElements(By.cssSelector("h4.product-name"));
+
+		for (int i = 0; i < products.size(); i++)
+		{
+			String[] name = products.get(i).getText().split("-");// Brocolli - 1 Kg  Brocolli, 1 kg
+			String formattedName = name[0].trim();
+
+			// 1. format it to get actual vegetable name
+			// 2. convert array into array list for easy search
+			// 3. check whether name you extracted is present in arrayList or not-
+
+			List itemsNeededList = Arrays.asList(itemsNeeded);
+			if (itemsNeededList.contains(formattedName))
+			{
+				j++;
+				driver.findElements(By.xpath("//div[@class='product-action']/button")).get(i).click();// click on Add to cart
+
+				if (j == itemsNeeded.length)
+				{
+					break;
+				}
+
+			}
+
+		}
+
+	}
+	
+Synchronization:
+	Implicit Wait:
+		It will wait each and every step where element to be available within in the period of time.
+			//deprecated
+			driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+			//New Syntax
+			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+	Explicit Wait:
+		Wait until the any particular element available within in the period of time.
+			WebDriverWait Explicit_wait = new WebDriverWait(driver,Duration.ofSeconds(10));
+			Explicit_wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".promoInfo")));
+			Explicit_wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".promoInfo")));
+			
+	Fluent Wait:
+			
+			  Wait<WebDriver> fluentWait = new FluentWait<WebDriver>(driver)
+				.withTimeout(Duration.ofSeconds(30))
+				.pollingEvery(Duration.ofSeconds(5))
+				.ignoring(NoSuchElementException.class);
+
+Actions Class:
+	MovetoElement:
+	Mouse operations like move over, all keyboard keys, contextclick, click, doubleClick, 
+		
+		Actions mouse = new Actions(driver);
+		mouse.moveToElement(driver.findElement(By.cssSelector("#twotabsearchtextbox")))
+			 .click().keyDown(Keys.SHIFT).sendKeys("pixel \5").doubleClick().build().perform();//select search box entering charactesr in capital letters and double click to copy
+		mouse.moveToElement(driver.findElement(By.cssSelector("span#nav-link-accountList-nav-line-1"))).build().perform(); //mouse overlay
+Keys : We can use directly Keys. method Keys
+
+Drag and drop of items in frame:
+		Actions items = new Actions(driver);//fro drag and drop of items in frames we have yo use actions class		
+		WebElement source = driver.findElement(By.cssSelector("div#draggable"));
+		WebElement target = driver.findElement(By.cssSelector("div#droppable"));
+		items.dragAndDrop(source, target).build().perform();
+		
+Frames:
+	A frame is a part of web page or browser window which displays content independent of its container, with the ability to load content independently
+		driver.get("https://jqueryui.com/droppable/");
+		int count = driver.findElements(By.tagName("iframe")).size();// gives the total count of frames in webpage
+		driver.switchTo().frame(count-1);//switching to frame by using index of frames in webpage 
+		driver.switchTo().frame(driver.findElement(By.cssSelector("iframe.demo-frame")));//switching to frame by using webelement of frame
+		
+
+		
+Windows Handles: 
+	Usally to operate between two or more tabs or windows in browser, window handles method is used WindowHandles method returns Set <String> 
+	To operate we have to iterate between them using iterator. Using iterator .next() and hasNext() methods are available
+	iterator.next() shifts to 0th location to first window in browser and hasNext method is will check that there is any window available other than current window
+		  
+		  Set<String> tabs = driver.getWindowHandles();
+		  //Set<String> tabs = driver.getWindowHandles();
+		  //List<String> aList = new ArrayList<String>(tabs);
+		  Iterator<String> tabSwitch = tabs.iterator();
+		  String parentid =tabSwitch.next();
+		  String childid=tabSwitch.next();
+		  driver.switchTo().window(parentid);
+		  driver.switchTo().window(childid)
+		  System.out.println(driver.getTitle());
+		  
+		  getWindowHandle() returns the window handle of currently focused window/tab. getWindowHandles() returns all windows/tabs handles launched/opened by same driver instance including all parent and child window.
+Return type of getWindowHandle() is String while return type of getWindowHandles() is Set<String>. The return type is Set as window handle is always unique.
+In chrome and Firefox , Each tab in a window will have unique window handles. So getWindowHandles() will return handles for all tabs of a window. For example:- If there are four tabs in a window is opened, getWindowHandles() method will give “four” for chrome and firefox browsers. I am not sure about IE and EDGE. I will bring this in a new post.
+getWindowHandles() internally uses LinkedHashSet. So whatever Set it returns, it will give window handles in order it is opened.
+	
+WebDriver Scope Limiting:
+	Steps:	1. To finds number of links in webpage, simply we can find by findElements method using tagName with "a"
+			2. To find a number of links in particular position in webpage, we have limit the scope by selecting the portion by findElement and apply tagname count to that limited_driver			
+				int numLinks = driver.findElements(By.tagName("a")).size();
+				System.out.println(numLinks);
+				WebElement footerdriver = driver.findElement(By.cssSelector("#navFooter"));
+				int footLinks = footerdriver.findElements(By.tagName("a")).size();
+				System.out.println(footLinks);
+				
+				
+Links in  separate and switching tabs:
+		//limiting the webdriver to footer somepart  and find the num of links there
+		//finding the num of links available and printing on console
+		WebElement Footpartdriver = driver.findElement(By.cssSelector("div[role='presentation']"));
+		int footpartLinks = Footpartdriver.findElements(By.tagName("a")).size();
+		System.out.println(footpartLinks);
+		
+		//opening that all links in new tabs simuntainsly 
+		for (int i = 0; i < footpartLinks; i++) {
+			String Clicklink = Keys.chord(Keys.CONTROL, Keys.ENTER);
+			Footpartdriver.findElements(By.tagName("a")).get(i).sendKeys(Clicklink);
+		}
+		
+		//handling all windows and getting the title using iterator and windowhandler
+		Set<String> tabs = driver.getWindowHandles();
+		Iterator<String> tabSwitch = tabs.iterator();
+		// String parentid =tabSwitch.next();
+		// String childid=tabSwitch.next();
+		
+		while (tabSwitch.hasNext()) {
+			driver.switchTo().window(tabSwitch.next());
+			System.out.println(driver.getTitle());
+		}
+
+Windows Scroll:
+	We have to use JavascriptExecutor method to implement the windowscrolling.
+	//1 create a method and use executeScript method 
+	
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("window.scrollBy(0,500)");
+		
+	To scroll the web table in a web page we have use the same JavascriptExecutor and executeScript methods 
+		similar to findElement in javascript also has querySelector by which we can find 
+		
+		js.executeScript("document.querySelector('.tableFixHead').scrollTop=500");
+		
+WebTables:
+	Table 1:
+		List<WebElement> amount = driver.findElements(By.cssSelector(".tableFixHead td:nth-child(4)"));
+		int sum = 0;
+		for (int i = 0; i < amount.size(); i++) 
+		{
+			int values = Integer.parseInt(amount.get(i).getText());
+			sum = sum + values;
+		}
+		System.out.println(sum);
+
+		int amountfetched = Integer.parseInt( driver.findElement(By.xpath("//div[contains(text(),'Total Amount')]")).getText().split(":")[1].trim());
+		Assert.assertEquals(sum, amountfetched);
+	Table 2:
+		List<WebElement> bigTable = driver.findElements(By.cssSelector("table[class='table-display'] td:nth-child(3)"));
+		int sum_long = 0;
+		for (int j = 0; j < bigTable.size(); j++) 
+		{
+			sum_long = sum_long + Integer.parseInt(bigTable.get(j).getText());
+		}
+		System.out.println(sum_long);
+		
+Handling SSL and Https Issues:
+			//SSl certificates
+			//Desired capabilities=
+			//general chrome profile
+			DesiredCapabilities ch=new DesiredCapabilities();
+			//ch.acceptInsecureCerts();
+			
+			ch.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
+			ch.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+
+			//Belows to your local browser
+			ChromeOptions c= new ChromeOptions();
+			c.merge(ch);
+			String path = "C:\\Users\\System 1\\Documents\\Selenium_Traning\\chromedriver.exe";
+			System.setProperty("webdriver.chrome.driver", path);
+			WebDriver driver = new ChromeDriver(c);
+			
+Delete Cookies:
+			driver.manage().window().maximize();//maximizing window
+			driver.manage().deleteAllCookies();//deleting all cookies
+			driver.manage().deleteCookieNamed("sessionkey");// deleting particular cookie
+			
+Taking Screenshot: 
+		TakesScreenshot scrShot =((TakesScreenshot)driver);
+		File src = scrShot.getScreenshotAs(OutputType.FILE);
+		FileUtils.copyFile(src,new File("GoogleFullPage.png"));
+Partial ScreenShot:
+		WebElement tabScreen = driver.findElement(By.cssSelector("img[alt='Google']"));
+		File partilaSrc = tabScreen.getScreenshotAs(OutputType.FILE);
+		FileUtils.copyFile(partilaSrc,new File( "Googletab.png"));
+		
+		
+Broken Link: 
+		
+		HttpURLConnection	conn = (HttpURLConnection)new URL(link).openConnection();
+		conn.setRequestMethod("HEAD");
+		//The HEAD method is identical to GET except that the server MUST NOT return a message-body in the response. 
+		//The metainformation contained in the HTTP headers in response to a HEAD request SHOULD be identical to the information 
+		//sent in response to a GET request. This method can be used for obtaining metainformation about the entity implied by the 
+		//request without transferring the entity-body itself. This method is often used for testing hypertext links for validity, 
+		//accessibility, and recent modification.
+		conn.connect();
+		int respCode = conn.getResponseCode();
+		System.out.println(respCode);
+		if(respCode>=400)
+		{
+			System.out.println(link);
+			//Assert.assertTrue(false);
+			a.assertTrue(false);
+		}
+			a.assertAll();
+
+Headless mode:
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--headless");//options.addArguments("--incongito");
+		WebDriver driver = new ChromeDriver(options);
+		or also we can use HtmlUnitDriver class
+		WebDriver driver = new HtmlUnitDriver();
+/*		
+HTMLUnitDriver
+HTML UnitDriver is the most light weight and fastest implementation headless browser for of WebDriver. It is based on HtmlUnit. It is known as Headless Browser Driver. It is same as Chrome, IE, or FireFox driver, but it does not have GUI so one cannot see the test execution on screen.
+
+Features of HTML unit driver:
+Support for the HTTPS and HTTP protocols
+Support for HTML responses ( clicking links, submitting forms, walking the DOM model of the HTML document etc.)
+Support for cookies
+Proxy server support
+Support for basic and NTLM authentication
+Excellent JavaScript support
+Support for submit methods GET and POST
+Ability to customize the request headers being sent to the server
+Ability to determine whether failing responses from the server should throw exceptions or should be returned as pages of the appropriate type*/
+
+package  htmldriver;
+import org.openqa.selenium.By;		
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;	
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;		
+public class htmlUnitYest {				
+		public static void main(String[] args) {
+                     // Creating a new instance of the HTML unit driver
+                      
+                     WebDriver driver = new HtmlUnitDriver();
+                      
+           		     // Navigate to Google		
+                     driver.get("http://www.google.com");					
+          
+					 // Locate the searchbox using its name		
+                     WebElement element = driver.findElement(By.name("q"));	
+                     
+                    // Enter a search query		
+                    element.sendKeys("Guru99");	
+                   
+		            // Submit the query. Webdriver searches for the form using the text input element automatically		
+                    // No need to locate/find the submit button		
+                    element.submit();			
+                    
+            		// This code will print the page title		
+                    System.out.println("Page title is: " + driver.getTitle());		
+                    
+                    driver.quit();			
+         }		
+}
+		
+		
+Exceptions:
+	NoSuchSessionException:
+		driver.get after quit() method will throw 
+		NoSuchSessionException: Session ID is null. Using WebDriver after calling quit()?
+		driver.get after close() method will throw 
+		WebDriverException: invalid session id
+		
+10 Common Exceptions in Selenium WebDriver
+One can find a complete list of Selenium WebDriver Exceptions in the documentation given by Selenium, but below are a few standard Selenium exceptions faced while running a test :
+
+ElementNotVisibleException		: In spite of the element being present in the DOM, it is not visible (can not be interactive). For example, elements defined in HTML with type =”hidden”
+ElementNotSelectableException	: An element is disabled (can not be clicked/selected) in spite of being present in the DOM
+NoSuchElementException			: Webdriver is not able to determine the elements during runtime, i.e., the FindBy method cannot find a particular component
+NoSuchFrameException			: Webdriver attempts to switch to an invalid frame, which is unavailable
+NoAlertPresentException			: Webdriver is trying to switch to an invalid alert, which is unavailable
+NoSuchWindowException			: Webdriver is trying to switch to an invalid window, which is unavailable
+StaleElementReferenceException	: The referenced element is no longer present on the DOM page (a reference to a component is now Stale). For example, the item belongs to a different frame than the current one or the user has navigated away to another page
+wait.until(ExpectedConditions.refreshed(ExpectedConditions.stalenessOf("table")));
+
+NoSuchSessionException			: Webdriver is acting immediately after ‘quitting’ the browser
+TimeoutException				: The command did not complete in the specified time. For example, the element didn’t display at the specified time. This is especially encountered when working with waits
+WebDriverException				: Webdriver is acting immediately after ‘closing’ the browser
+		
+using keys from a element to shift another element
+
+		lp.getEmailAddress().click();
+		String key =Keys.chord(Keys.TAB);
+		Actions a = new Actions(driver);
+		a.sendKeys(key).perform();
+		a.sendKeys("opencart").perform();
+		a.sendKeys(key).perform();
+		a.sendKeys(key).perform();
+		String keyenter =Keys.chord(Keys.ENTER);
+		a.sendKeys(keyenter).click().build().perform();
+		
+		
+adding cookies and reopening the browser with same link cookie
+		MyAccPage mp=lp.getloginbutton();
+		System.out.println(mp.getvalidateAccPage());
+		Set<Cookie> allCookies = driver.manage().getCookies();		
+		driver.close();
+		driver = new ChromeDriver();
+		driver.get("https://demo.opencart.com/");
+		for(Cookie cookie : allCookies)
+		{
+		    driver.manage().addCookie(cookie);
+		}
+		
+How Do You Pass Credentials To An Authentication Popup In Selenium?
+We combine the username and password strings using the colon separator and stuff them between the “http://” and the site URL. See the below example.
+http://userid:passcode@somesite.com
+e.g. http://shankarchanna9:cshankar9@gmail.com
+
+How To Enter Text In The HTML Text Box Without Invoking The SendKeys()?
+There is a Selenium JavascriptExecutor class that provides methods to perform actions on the HTML elements.
+// Set up the JS object
+JavascriptExecutor js = (JavascriptExecutor)driver;
+// Issue command to enter the text
+js.executeScript("document.getElementById('textbox').value = 'Some Text';");
+
+What Is A Page Object In Selenium WebDriver?
+First of all, both these terms belong to the Page Object Model (POM), a design pattern in Selenium. Let’s now see how are they different from each other.
+Page Object is a class in POM corresponding to a web page. It captures the functionality as functions and objects as members.
+public class LogInPage
+{
+    private WebElement user;
+    private WebElement pass;
+	By username = By.xpath("username");
+	By password = By.id("password");
+    public LogInPage() {
+    }
+
+    public void findObjects() {
+        user = browser.findElement(username);
+        pass = browser.findElement(password);
+    }
+
+    public void processLogIn() {
+        user.sendKeys("john");
+        pass.sendKeys("password");
+    }
+}
+What Is A Page Factory In Selenium WebDriver?
+Page Factory is a method to set up the web elements within the page object.
+public class LogInPage
+{
+    @FindBy(id="userName")
+    private WebElement user;
+
+    @FindBy(id="password")
+    private WebElement pass;
+
+    public LogInPage() {
+        PageFactory.initElements(browser, this); // Setup the members as browser.findElement()
+    }
+
+    public void processLogIn() {
+        user.sendKeys("john");
+        pass.sendKeys("password");
+    }
+}
+
+
+How to execute failed test cases in Selenium WebDriver using IRetryAnalyzer in TestNG.
+
+I'm sure, you are facing random failure during an automated test run. These failures might not necessarily be because of product bugs. 
+
+These failure can be because of following reasons:
+
++Random browser issues 
++Browser becoming unresponsive
++Random machine issues
++Server issues like unexpected delay in the response from server
++Application not responding properly
++Application is very slow
++Network is very slow, hence app is very slow
++Ajax Component could not be loaded properly
++HTML DOM is slow
+
+
+There are two ways to implement retry logic using TestNG Listener:
+1. By specifying retryAnalyzer value in the @Test annotation
+2. By adding Retry analyser during run time by implementing IAnnotationTransformer interfaces
+
+Explain how you can login into any site if it’s showing any authentication popup for password and username?
+Pass the username and password with url
+Syntax-http://username:password@url
+ex- http://creyate:tom@www.gmail.com
+
+log4j for logging
+
+Types of logs
+1 info
+2 warn
+3 debug
+4 fatal
+
+log4j.properties file:
+
+#Set level
+log4j.rootCategory=debug, console, file  
+  
+# Appender which writes to console  
+log4j.appender.console=org.apache.log4j.ConsoleAppender  
+log4j.appender.console.layout=org.apache.log4j.PatternLayout
+log4j.appender.console.layout.ConversionPattern=%d{MM-dd-yyyy HH:mm:ss} %F %-5p [%t] %c{2} %L - %m%n
+  
+# Appender which writes to a file  
+log4j.appender.file=org.apache.log4j.RollingFileAppender
+log4j.appender.file.File=application.log
+  
+# Defining maximum size of a log file
+log4j.appender.file.MaxFileSize=10mb 
+log4j.appender.file.MaxBackupIndex=10
+log4j.appender.file.layout=org.apache.log4j.PatternLayout  
+log4j.appender.file.layout.ConversionPattern=%d{ISO8601} %5p [%t] %c{1}:%L - %m%n
+log4j.appender.file.Append=true
+
+
+To write log directly in class:
+Logger log = Logger.getLogger(LoginTest.class);
+log.info("this is a log");
+log.warn("This is warning");
+log.debug("This is a debug");
+log.fatal("A fatal thing is happened");
+
+mvn clean install // command to run through maven
+mvn artifact of testng should modify test -- compile
+
+Extent reports:
+for reference: https://www.extentreports.com/docs/versions/3/java/#basic-example
+https://www.pavantestingtools.com/2019/01/how-to-generate-extent-report-version-4.html
+Basic Usage Example
+A simple example with a static entr
+y-point.
+
+
+public class Main {
+    public static void main(String[] args) {
+        // start reporters
+        ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter("path to generate file extent.html");
+    
+        // create ExtentReports and attach reporter(s)
+        ExtentReports extent = new ExtentReports();
+        extent.attachReporter(htmlReporter);
+
+        // creates a toggle for the given test, adds all log events under it    
+        ExtentTest test = extent.createTest("MyFirstTest", "Sample description");
+
+        // log(Status, details)
+        test.log(Status.INFO, "This step shows usage of log(status, details)");
+
+        // info(details)
+        test.info("This step shows usage of info(details)");
+        
+        // log with snapshot
+        test.fail("details", MediaEntityBuilder.createScreenCaptureFromPath("screenshot.png").build());
+        
+        // test with snapshot
+        test.addScreenCaptureFromPath("screenshot.png");
+        
+        // calling flush writes everything to the log file
+        extent.flush();
+    }
+}
+
+TestNG Examples:-
+
+Using ExtentTestNGReportBuilder:
+
+public class ExtentTestNGReportBuilder {
+
+	private static ExtentReports extent;
+    private static ThreadLocal parentTest = new ThreadLocal();
+    private static ThreadLocal test = new ThreadLocal();
+
+	@BeforeSuite
+	public void beforeSuite() {
+		extent = ExtentManager.createInstance("extent.html");
+		ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter("extent.html");
+		extent.attachReporter(htmlReporter);
+	}
+	
+    @BeforeClass
+    public synchronized void beforeClass() {
+        ExtentTest parent = extent.createTest(getClass().getName());
+        parentTest.set(parent);
+    }
+
+    @BeforeMethod
+    public synchronized void beforeMethod(Method method) {
+        ExtentTest child = parentTest.get().createNode(method.getName());
+        test.set(child);
+    }
+
+    @AfterMethod
+    public synchronized void afterMethod(ITestResult result) {
+        if (result.getStatus() == ITestResult.FAILURE)
+            test.get().fail(result.getThrowable());
+        else if (result.getStatus() == ITestResult.SKIP)
+            test.get().skip(result.getThrowable());
+        else
+            test.get().pass("Test passed");
+
+        extent.flush();
+    }
+}
+
+public class ExtentManager {
+    
+    private static ExtentReports extent;
+    
+    public static ExtentReports getInstance() {
+    	if (extent == null)
+    		createInstance("test-output/extent.html");
+    	
+        return extent;
+    }
+    
+    public static ExtentReports createInstance(String fileName) {
+        ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(fileName);
+        htmlReporter.config().setTestViewChartLocation(ChartLocation.BOTTOM);
+        htmlReporter.config().setChartVisibilityOnOpen(true);
+        htmlReporter.config().setTheme(Theme.STANDARD);
+        htmlReporter.config().setDocumentTitle(fileName);
+        htmlReporter.config().setEncoding("utf-8");
+        htmlReporter.config().setReportName(fileName);
+        
+        extent = new ExtentReports();
+        extent.attachReporter(htmlReporter);
+        
+        return extent;
+    }
+}
+
+TestNG IReporter:
+
+public class ExtentTestNGIReporterListener implements IReporter {
+    
+    private static final String OUTPUT_FOLDER = "test-output/";
+    private static final String FILE_NAME = "Extent.html";
+    
+    private ExtentReports extent;
+
+    @Override
+    public void generateReport(List xmlSuites, List suites, String outputDirectory) {
+        init();
+        
+        for (ISuite suite : suites) {
+            Map result = suite.getResults();
+            
+            for (ISuiteResult r : result.values()) {
+                ITestContext context = r.getTestContext();
+                
+                buildTestNodes(context.getFailedTests(), Status.FAIL);
+                buildTestNodes(context.getSkippedTests(), Status.SKIP);
+                buildTestNodes(context.getPassedTests(), Status.PASS);
+                
+            }
+        }
+        
+        for (String s : Reporter.getOutput()) {
+            extent.setTestRunnerOutput(s);
+        }
+        
+        extent.flush();
+    }
+    
+    private void init() {
+        ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(OUTPUT_FOLDER + FILE_NAME);
+        htmlReporter.config().setDocumentTitle("ExtentReports - Created by TestNG Listener");
+        htmlReporter.config().setReportName("ExtentReports - Created by TestNG Listener");
+        htmlReporter.config().setTestViewChartLocation(ChartLocation.BOTTOM);
+        htmlReporter.config().setTheme(Theme.STANDARD);
+        
+        extent = new ExtentReports();
+        extent.attachReporter(htmlReporter);
+        extent.setReportUsesManualConfiguration(true);
+    }
+    
+    private void buildTestNodes(IResultMap tests, Status status) {
+        ExtentTest test;
+        
+        if (tests.size() > 0) {
+            for (ITestResult result : tests.getAllResults()) {
+                test = extent.createTest(result.getMethod().getMethodName());
+                
+                for (String group : result.getMethod().getGroups())
+                    test.assignCategory(group);
+
+                if (result.getThrowable() != null) {
+                    test.log(status, result.getThrowable());
+                }
+                else {
+                    test.log(status, "Test " + status.toString().toLowerCase() + "ed");
+                }
+                
+                test.getModel().setStartTime(getTime(result.getStartMillis()));
+                test.getModel().setEndTime(getTime(result.getEndMillis()));
+            }
+        }
+    }
+    
+    private Date getTime(long millis) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+        return calendar.getTime();      
+    }
+}
+
+
+TestNG ITestListener:
+
+public class ExtentTestNGITestListener implements ITestListener {
+
+	private static ExtentReports extent = ExtentManager.createInstance("extent.html");
+	private static ThreadLocal parentTest = new ThreadLocal();
+    private static ThreadLocal test = new ThreadLocal();
+	
+    @Override
+	public synchronized void onStart(ITestContext context) {
+    	ExtentTest parent = extent.createTest(getClass().getName());
+        parentTest.set(parent);
+	}
+
+	@Override
+	public synchronized void onFinish(ITestContext context) {
+		extent.flush();
+	}
+	
+	@Override
+	public synchronized void onTestStart(ITestResult result) {
+		ExtentTest child = parentTest.get().createNode(result.getMethod().getMethodName());
+        test.set(child);
+	}
+
+	@Override
+	public synchronized void onTestSuccess(ITestResult result) {
+		test.get().pass("Test passed");
+	}
+
+	@Override
+	public synchronized void onTestFailure(ITestResult result) {
+		test.get().fail(result.getThrowable());
+	}
+
+	@Override
+	public synchronized void onTestSkipped(ITestResult result) {
+		test.get().skip(result.getThrowable());
+	}
+
+	@Override
+	public synchronized void onTestFailedButWithinSuccessPercentage(ITestResult result) {
+		
+	}
+}
+
+public class ExtentManager {
+    
+    private static ExtentReports extent;
+    
+    public static ExtentReports getInstance() {
+    	if (extent == null)
+    		createInstance("test-output/extent.html");
+    	
+        return extent;
+    }
+    
+    public static ExtentReports createInstance(String fileName) {
+        ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(fileName);
+        htmlReporter.config().setTestViewChartLocation(ChartLocation.BOTTOM);
+        htmlReporter.config().setChartVisibilityOnOpen(true);
+        htmlReporter.config().setTheme(Theme.STANDARD);
+        htmlReporter.config().setDocumentTitle(fileName);
+        htmlReporter.config().setEncoding("utf-8");
+        htmlReporter.config().setReportName(fileName);
+        
+        extent = new ExtentReports();
+        extent.attachReporter(htmlReporter);
+        
+        return extent;
+    }
+}
+
+ExtentReports from pavan tutorial with example:
+link: https://www.pavantestingtools.com/2019/01/how-to-generate-extent-report-version-4.html
+
+Migrating from Version 3
+
+If you are migrating from version 3, please note that the core usage remains the same. See the list of breaking changes
+
+API: ChartLocation
+
+Affected type: ChartLocation
+ChartLocation is no longer available, and can be removed from your setup code
+Suggested fix: removal of ChartLocation
+
+ExtentEmailReporter::EmailTemplate
+Affected type: EmailTemplate
+EmailTemplate has moved from package com.aventstack.extentreports.reporter to com.aventstack.extentreports.reporter.configuration
+Suggested fix: Re-import package imports to fix
+
+Mentioned below are the sequence of steps to use Extent Reports 4 in Selenium Webdriver in TestNG
+
+Step #1:
+Extent Reports can be directly used in selenium WebDriver by importing the JAR file – extentreports-4.0.6.jar which can be downloaded here.
+
+Or
+
+Here is the link:http://extentreports.com/community-downloads/v4/extentreports-4.0.1.zip
+Once the ZIP file is downloaded, extract the contents of the ZIP file into a folder.
+
+Step #2:
+Add the jar files present in the ZIP file to the project build path using the option Build Path --> Configure Build Path.
+
+Sample code for Extent Reports
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.ITestResult;
+import org.testng.annotations.*;
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
+import com.aventstack.extentreports.reporter.configuration.Theme;
+
+public class NopCommerceTest {
+ public WebDriver driver;
+ public ExtentHtmlReporter htmlReporter;
+ public ExtentReports extent;
+ public ExtentTest test;
+
+ @BeforeTest
+ public void setExtent() {
+  // specify location of the report
+  htmlReporter = new ExtentHtmlReporter(System.getProperty("user.dir") + "/test-output/myReport.html");
+
+  htmlReporter.config().setDocumentTitle("Automation Report"); // Tile of report
+  htmlReporter.config().setReportName("Functional Testing"); // Name of the report
+  htmlReporter.config().setTheme(Theme.DARK);
+  
+  extent = new ExtentReports();
+  extent.attachReporter(htmlReporter);
+  
+  // Passing General information
+  extent.setSystemInfo("Host name", "localhost");
+  extent.setSystemInfo("Environemnt", "QA");
+  extent.setSystemInfo("user", "pavan");
+ }
+
+ @AfterTest
+ public void endReport() {
+  extent.flush();
+ }
+
+ @BeforeMethod
+ public void setup() {
+  System.setProperty("webdriver.chrome.driver", "C://Drivers/chromedriver_win32/chromedriver.exe");
+  driver = new ChromeDriver();
+  driver.manage().window().maximize();
+  driver.get("http://demo.nopcommerce.com/");
+ }
+
+ //Test1
+ @Test
+ public void noCommerceTitleTest() {
+  test = extent.createTest("noCommerceTitleTest");
+  String title = driver.getTitle();
+  System.out.println(title);
+  Assert.assertEquals(title, "eCommerce demo store");
+ }
+
+ //Test2
+ @Test
+ public void noCommerceLogoTest() {
+  test = extent.createTest("noCommerceLogoTest");
+  boolean b = driver.findElement(By.xpath("//img[@alt='nopCommerce demo store']")).isDisplayed();
+  Assert.assertTrue(b);
+ }
+
+ //Test3
+ @Test
+ public void noCommerceLoginTest() {
+  test = extent.createTest("noCommerceLoginTest");
+  
+  test.createNode("Login with Valid input");
+  Assert.assertTrue(true);
+  
+  test.createNode("Login with In-valid input");
+  Assert.assertTrue(true);
+ }
+  
+ @AfterMethod
+ public void tearDown(ITestResult result) throws IOException {
+  if (result.getStatus() == ITestResult.FAILURE) {
+   test.log(Status.FAIL, "TEST CASE FAILED IS " + result.getName()); // to add name in extent report
+   test.log(Status.FAIL, "TEST CASE FAILED IS " + result.getThrowable()); // to add error/exception in extent report
+   String screenshotPath = NopCommerceTest.getScreenshot(driver, result.getName());
+   test.addScreenCaptureFromPath(screenshotPath);// adding screen shot
+  } else if (result.getStatus() == ITestResult.SKIP) {
+   test.log(Status.SKIP, "Test Case SKIPPED IS " + result.getName());
+  }
+  else if (result.getStatus() == ITestResult.SUCCESS) {
+   test.log(Status.PASS, "Test Case PASSED IS " + result.getName());
+  }
+  driver.quit();
+ }
+ 
+ public static String getScreenshot(WebDriver driver, String screenshotName) throws IOException {
+  String dateName = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+  TakesScreenshot ts = (TakesScreenshot) driver;
+  File source = ts.getScreenshotAs(OutputType.FILE);
+  
+  // after execution, you could see a folder "FailedTestsScreenshots" under src folder
+  String destination = System.getProperty("user.dir") + "/Screenshots/" + screenshotName + dateName + ".png";
+  File finalDestination = new File(destination);
+  FileUtils.copyFile(source, finalDestination);
+  return destination;
+ }
+}
+
+
+Difference between PUT and PATCH  request:
+
+PATCH HTTP Request: Unlike PUT Request, PATCH does partial update e.g. Fields that need to be updated by the client, only that field is updated without modifying the other field.
+PUT HTTP Request: PUT is a method of modifying resources where the client sends data that updates the entire resource. PUT is similar to POST in that it can create resources, but it does so when there is a defined URL wherein PUT replaces the entire resource if it exists or creates new if it does not exist.
+
+https://www.geeksforgeeks.org/difference-between-put-and-patch-request/
+
+	public static Object[][] getTestData(String sheetName) {
+		public static TESTDATA_SHEET_PATH="path";
+		FileInputStream file = null;
+		try {
+			file = new FileInputStream(TESTDATA_SHEET_PATH);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		try {
+			book = WorkbookFactory.create(file);
+		} catch (InvalidFormatException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		FileInputStream file = new FileInputStream(TESTDATA_SHEET_PATH);
+		book = WorkbookFactory.create(file);/xlsx
+		sheet = book.getSheet(sheetName);
+		Object[][] data = new Object[sheet.getLastRowNum()][sheet.getRow(0).getLastCellNum()];
+		// System.out.println(sheet.getLastRowNum() + "--------" +
+		// sheet.getRow(0).getLastCellNum());
+		for (int i = 0; i < sheet.getLastRowNum(); i++) {
+			for (int k = 0; k < sheet.getRow(0).getLastCellNum(); k++) {
+				data[i][k] = sheet.getRow(i + 1).getCell(k).toString();
+				// System.out.println(data[i][k]);
+			}
+		}
+		return data;
+	}
