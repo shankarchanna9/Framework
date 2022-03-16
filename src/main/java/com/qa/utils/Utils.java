@@ -2,11 +2,13 @@ package com.qa.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -56,6 +58,7 @@ public class Utils extends base {
 		String title = driver.getTitle();
 		return title;
 	}
+	//We have to find the common attribute in the all checkboxes in webpage.
 	public int getcheckboxCount(By locator) {
 		return getElements(locator).size();
 	}
@@ -78,17 +81,37 @@ public class Utils extends base {
 		else return false;
 	}
 	
-	public void choicebyfindelements(By locator, String name) {
-		List<WebElement> options = getElements(locator);
-		for (WebElement option : options) {
-			if (option.getText().equalsIgnoreCase(name)) {
-				option.click();
+	public int getElementsCount(String tagName) {
+		return driver.findElements(By.tagName(tagName)).size();
+	}
+
+	public List<String> getAttributesList(String tagName, String attributeName) {
+
+		List<String> attrList = new ArrayList<String>();
+
+		List<WebElement> elementList = driver.findElements(By.tagName(tagName));
+		for (WebElement e : elementList) {
+			String text = e.getAttribute(attributeName);
+			attrList.add(text);
+		}
+
+		return attrList;
+	}
+
+	public void doClickFromList(By locator, String linkText) {
+		List<WebElement> footerList = getElements(locator);
+
+		for (int i = 0; i < footerList.size(); i++) {
+			String text = footerList.get(i).getText();
+			if (text.equals(linkText)) {
+				footerList.get(i).click();
 				break;
 			}
 		}
 	}
+
 	
-	//***********Drag and drop of items in frame:
+	//***********Drag and drop of items in frame:********//
 	
 	public void dragandDrop(By sourceLocator, By DestLocator) {
 		Actions action = new Actions(driver);		
@@ -112,11 +135,28 @@ public class Utils extends base {
 			action.moveToElement(getElement(locator)).click().build().perform();
 		}
 	 
-
+		//***********Action Class methods********//
+		public void doDoubleClick(By locator) {
+			Actions mouse = new Actions(driver);
+			mouse.doubleClick(getElement(locator));
+		}
 	
+		public void doContextClick(By locator) {
+			Actions mouse = new Actions(driver);
+			mouse.doubleClick(getElement(locator));
+			//String keys = KeyDOWN(Keys.SHIFT);
+		}
+		
+		public void sendCapitalKeys(String text, By locator) {
+			//driver.findElement(locator).sendKeys(KeyDown.);.
+			Actions mouse = new Actions(driver);
+			mouse.moveToElement(getElement(locator)).keyDown(getElement(locator), Keys.SHIFT).sendKeys(text);
+		}
+		
+		
+		
 	// ***************************Drop Down Utils***********************************//
 
-	
 	public int getdropdownOptionsbySelect(By locator) {
 		WebElement element = getElement(locator);
 		Select staticdropdown= new Select(element);
@@ -197,25 +237,38 @@ public class Utils extends base {
 	public String switchToAlertgetText() {
 		return switchToAlert().getText();
 	}
+	
 	public String switchToAlerttoString() {
 		return switchToAlert().toString();
 	}
 	
 	
-	
-	
-	
-	
-	//****************take Screenshot methods************************//
-	
-public void takeScreenshotAtEndOfTest() throws IOException {
-		
+	// ****************take Screenshot methods************************//
+
+	public void takeScreenshotAtEndOfTest() throws IOException {
+
 		TakesScreenshot screenshot = ((TakesScreenshot) driver);
-		File scrFile  = screenshot.getScreenshotAs(OutputType.FILE);
+		File scrFile = screenshot.getScreenshotAs(OutputType.FILE);
 		String currentDir = System.getProperty("user.dir");
 		FileUtils.copyFile(scrFile, new File(currentDir + "/screenshots/" + System.currentTimeMillis() + ".png"));
 	}
-	
+
+	/**
+	 * This method is used to take the screenshot It will return the path of
+	 * screenshot
+	 */
+	public String getScreenshot() {
+		File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+		String path = System.getProperty("user.dir") + "/screenshots/" + System.currentTimeMillis() + ".png";
+		File destination = new File(path);
+		try {
+			FileUtils.copyFile(src, destination);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return path;
+	}
+
 	//************************ Teardown methods ******************//
 	
 	public void tearDown(String method) {
