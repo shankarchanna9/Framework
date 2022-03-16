@@ -3,7 +3,9 @@ package com.qa.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Alert;
@@ -110,6 +112,57 @@ public class Utils extends base {
 		}
 	}
 
+	//***********Frame Handling methods***************//
+	
+	public WebDriver switchToFrame(int num) {
+		return driver.switchTo().frame(num);
+	}
+	
+	public WebDriver switchToFrame(By locator) {
+		return driver.switchTo().frame(getElement(locator));
+	}
+	
+	//************Windows handles *****************//
+
+	public void switchToRightWindow(String windowtitle) {
+		Set<String> tabs = driver.getWindowHandles();
+		List<String> list = new ArrayList<String>(tabs);
+		for (String ls : list) {
+			String title = driver.switchTo().window(ls).getTitle();
+			if (windowtitle.equals(title)) {
+				driver.switchTo().window(windowtitle);
+				System.out.println("Found the Right window " + title);
+			}
+		}
+
+	}
+
+	public void switchToParentWindow() {
+		String parentid = driver.getWindowHandle();
+		driver.switchTo().window(parentid);
+	}
+
+	public void switchToParentWindow(String parentWindow) {
+		driver.switchTo().window(parentWindow);
+	}
+
+	public void closeAllWindows(List<String> windowList, String parentWindowId) {
+		for (String ls : windowList) {
+			if (!ls.equals(parentWindowId)) {
+				driver.switchTo().window(ls).close();
+			}
+		}
+	}
+
+	public void switchToChildWindow() {
+		Set<String> tabs = driver.getWindowHandles();
+		Iterator<String> tabSwitch = tabs.iterator();
+		String parentid = tabSwitch.next();
+		String childid = tabSwitch.next();
+		driver.switchTo().window(parentid);
+		driver.switchTo().window(childid);
+		System.out.println(driver.getTitle());
+	}
 	
 	//***********Drag and drop of items in frame:********//
 	
@@ -229,6 +282,13 @@ public class Utils extends base {
 	public void switchToAlertAccept() {
 		switchToAlert().accept();
 	}
+	
+	public void switchToAlertAccept(String text) {
+		String actualText = switchToAlertgetText();
+		if(actualText.equals(text))
+		switchToAlert().accept();
+	}
+	
 	
 	public void switchToAlertDismiss() {
 		switchToAlert().dismiss();
