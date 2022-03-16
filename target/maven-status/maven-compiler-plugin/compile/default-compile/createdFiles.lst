@@ -1,0 +1,6 @@
+com\qa\utils\commonUtils.class
+com\qa\utils\Utils.class
+com\qa\test\resources\loginPageTest.class
+com\qa\resources\base.class
+com\qa\utils\Sync.class
+com\qa\pages\loginPage.class

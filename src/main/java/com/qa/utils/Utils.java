@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -169,6 +171,40 @@ public class Utils extends base {
 	public void navigateRefresh() {
 		driver.navigate().refresh();
 	}
+	
+	//************ Java Alerts *****************//
+	
+	
+	public Alert switchToAlert() {
+		try {
+		return driver.switchTo().alert();
+		}
+		catch(NoAlertPresentException e) {
+			e.printStackTrace();
+			System.out.println("No Alert is present in the webpage");
+			return null;
+		}
+	}
+	
+	public void switchToAlertAccept() {
+		switchToAlert().accept();
+	}
+	
+	public void switchToAlertDismiss() {
+		switchToAlert().dismiss();
+	}
+	
+	public String switchToAlertgetText() {
+		return switchToAlert().getText();
+	}
+	public String switchToAlerttoString() {
+		return switchToAlert().toString();
+	}
+	
+	
+	
+	
+	
 	
 	//****************take Screenshot methods************************//
 	
