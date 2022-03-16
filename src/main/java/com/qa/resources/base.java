@@ -46,7 +46,7 @@ public class base {
 
 		// fetching browsername and url from properties file
 		browser = prop.getProperty("browser");
-		url = prop.getProperty("URL");
+		url = prop.getProperty("URL2");
 
 		switch (browser) {
 

@@ -19,18 +19,27 @@ public class loginPageTest extends base {
 	}
 
 	
-	@Test
-	public void login() {
-		// loginPage lp = new loginPage(driver);
-		// lp.login();
-		//getInstance(loginPage.class).login();
-		//
-		boolean bool = getInstance(Utils.class).compareTitle("Rahul Shetty Academy- - Login page");
-		Assert.assertEquals(bool, true);
-		//Assert.assertEquals(getInstance(Utils.class).getTitle(), "Rahul Shetty Academy - Login page");
-		System.out.println(getInstance(Utils.class).getTitle());
-	}
+	//@Test
+	/*
+	 * public void login() { // loginPage lp = new loginPage(driver); // lp.login();
+	 * //getInstance(loginPage.class).login(); // boolean bool =
+	 * getInstance(Utils.class).compareTitle("Rahul Shetty Academy - Login page");
+	 * Assert.assertEquals(bool, true);
+	 * //Assert.assertEquals(getInstance(Utils.class).getTitle(),
+	 * "Rahul Shetty Academy - Login page");
+	 * System.out.println(getInstance(Utils.class).getTitle()); }
+	 */
 
+	@Test
+	public void testingAlert() {
+		System.out.println(getInstance(loginPage.class).alert());
+	}
+	@Test
+	public void testingAlert2() {
+		
+		System.out.println(getInstance(loginPage.class).alert2());
+	}
+	
 	@AfterTest
 	public void teardown() {
 		getInstance(Utils.class).tearDown("quit");
