@@ -1,4 +1,4 @@
-package com.qa.utils;
+package com.qa.constants;
 
 public class commonUtils {
 
