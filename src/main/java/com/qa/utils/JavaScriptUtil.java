@@ -70,6 +70,7 @@ public class JavaScriptUtil {
 	public void scrollPageDown(String height) {
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("window.scrollTo(0, '" + height + "')");
+		
 	}
 
 	public void scrollPageUp() {

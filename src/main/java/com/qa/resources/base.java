@@ -11,7 +11,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-import com.qa.utils.commonUtils;
+import com.qa.constants.commonUtils;
 
 public class base {
 	public WebDriver driver;

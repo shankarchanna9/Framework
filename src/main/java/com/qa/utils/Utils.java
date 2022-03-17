@@ -2,6 +2,9 @@ package com.qa.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,7 +19,10 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.Select;
 
 import com.qa.resources.base;
@@ -154,6 +160,10 @@ public class Utils extends base {
 		}
 	}
 
+	public void switchToChildWindow(String childWindow) {
+		driver.switchTo().window(childWindow);
+	}
+
 	public void switchToChildWindow() {
 		Set<String> tabs = driver.getWindowHandles();
 		Iterator<String> tabSwitch = tabs.iterator();
@@ -164,7 +174,31 @@ public class Utils extends base {
 		System.out.println(driver.getTitle());
 	}
 	
-	//***********Drag and drop of items in frame:********//
+	//**************WebDriver Scope Limiting*************//
+	
+	
+		/*Steps:	1. To finds number of links in webpage, simply we can find by 
+		 * 				findElements method using tagName with "a"
+				2. To find a number of links in particular position in webpage, 
+					we have limit the scope by selecting the portion by findElement and 
+					apply tagname count to that limited_driver			
+		*/
+	
+		public WebElement webdriverScopeLimit(By locator) {
+			WebElement driverlimit = getElement(locator);
+			return driverlimit;
+		}
+		
+		public int linksCountWebDriverScopeLimit(By locator) {
+			WebElement loca=webdriverScopeLimit(locator);
+			int links = loca.findElements(By.tagName("a")).size();
+			return links;
+		}
+		
+	
+	
+	
+	//******************Drag and drop of items in frame:***************//
 	
 	public void dragandDrop(By sourceLocator, By DestLocator) {
 		Actions action = new Actions(driver);		
@@ -301,11 +335,44 @@ public class Utils extends base {
 	public String switchToAlerttoString() {
 		return switchToAlert().toString();
 	}
+	//************** SSL Certificates and Insecure page acceptance method*****************//
 	
+	public DesiredCapabilities SSLCertificateAccept() {
+		DesiredCapabilities ch = new DesiredCapabilities();
+		ch.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
+		// ch.acceptInsecureCerts();
+		ch.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+		return ch;
+
+		//		ChromeOptions c= new ChromeOptions();
+		//		c.merge(ch);
+		//		String path = "C:\\Users\\System 1\\Documents\\Selenium_Traning\\chromedriver.exe";
+		//		System.setProperty("webdriver.chrome.driver", path);
+		//		WebDriver driver = new ChromeDriver(c);
+
+	}
+	
+	//******** Cookies deleting ********//
+	
+	public void allCookiesDelete() {
+		driver.manage().deleteAllCookies();
+	}
+	
+	public void namedCookieDelete(String cookieName) {
+		driver.manage().deleteCookieNamed(cookieName);
+	}
+	
+	public void maximizeWindow() {
+		driver.manage().window().maximize();
+	}
+	
+	public void minimizeWindow() {
+		driver.manage().window().minimize();
+	}
 	
 	// ****************take Screenshot methods************************//
 
-	public void takeScreenshotAtEndOfTest() throws IOException {
+	public void takeScreenshot() throws IOException {
 
 		TakesScreenshot screenshot = ((TakesScreenshot) driver);
 		File scrFile = screenshot.getScreenshotAs(OutputType.FILE);
@@ -329,6 +396,35 @@ public class Utils extends base {
 		return path;
 	}
 
+	public void takeScreenshot(By locator) {
+
+		WebElement partialScreenshot = getElement(locator);
+		File scrFile = partialScreenshot.getScreenshotAs(OutputType.FILE);
+		String currentDir = System.getProperty("user.dir");
+		try {
+			FileUtils.copyFile(scrFile, new File(currentDir + "/screenshots/" + System.currentTimeMillis() + ".png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//**************Broken Link ********************//
+	
+	public boolean verifyBrokenLink(String link) throws IOException {
+		HttpURLConnection conn = (HttpURLConnection)new URL(link).openConnection();
+		conn.setRequestMethod("HEAD");
+		conn.connect();
+		int respCode = conn.getResponseCode();
+		if(respCode>=400) {
+			return true;
+		}
+		return false;
+	}
+	
+	
+	
+	
+	
 	//************************ Teardown methods ******************//
 	
 	public void tearDown(String method) {
